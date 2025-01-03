@@ -51,4 +51,14 @@ RSpec.describe Validatron::Validator do
     expect { Validatron::Validator.validate(params, schema) }
       .to raise_error(Validatron::ValidationError, /age must be greater than 0/)
   end
+
+  it "raises custom error message for missing required parameters" do
+    schema_with_custom_message = Validatron::Schema.new
+    schema_with_custom_message.required(:name, type: :string, message: "Name is required")
+    schema_with_custom_message.required(:email, type: :string, message: "Email is required")
+
+    params = { email: "john@example.com" }
+    expect { Validatron::Validator.validate(params, schema_with_custom_message) }
+      .to raise_error(Validatron::ValidationError, /Name is required/)
+  end
 end

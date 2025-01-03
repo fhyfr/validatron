@@ -7,22 +7,25 @@ module Validatron
 
       schema.rules.each do |key, options|
         value = params[key.to_s] || params[key.to_sym]
+        custom_message = options[:message]
 
         missing_options = REQUIRED_OPTIONS.select { |option| options[option].nil? }
-        errors[key] = "must have a #{missing_options.join(", ")} defined" unless missing_options.empty?
+        unless missing_options.empty?
+          errors[key] = custom_message || "must have a #{missing_options.join(", ")} defined"
+        end
 
         # Validate required fields
         if options[:required] && value.nil?
-          errors[key] = "is required"
+          errors[key] = custom_message || "is required"
         # Validate type of field
         elsif options[:type] && !value.nil? && !value.is_a?(Object.const_get(options[:type].capitalize))
-          errors[key] = "must be a #{options[:type]}"
+          errors[key] = custom_message || "must be a #{options[:type]}"
         # Check for format validation
         elsif options[:format] && value !~ options[:format]
-          errors[key] = "is invalid"
+          errors[key] = custom_message || "is invalid"
         # Validate greater than fields
         elsif options[:gt] && value.to_i <= options[:gt]
-          errors[key] = "must be greater than #{options[:gt]}"
+          errors[key] = custom_message || "must be greater than #{options[:gt]}"
         end
       end
 
