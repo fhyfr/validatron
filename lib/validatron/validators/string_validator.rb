@@ -1,6 +1,12 @@
 module Validatron
   module Validators
     class StringValidator < BaseValidator
+      # Available validations for StringValidator:
+      # - type: :string => must be a string
+      # - min: 0 => must be at least 0 characters long
+      # - max: 100 => must be at most 100 characters long
+      # - length: 5 => must be exactly 5 characters long
+      # - pattern: /^[a-z]+$/ => must match the pattern
       def validate
         return unless value
 

@@ -17,7 +17,7 @@ module Validatron
       errors = {}
 
       schema.rules.each do |key, options|
-        value = params[key.to_s] || params[key.to_sym]
+        value = params[key.to_sym]
         message = options[:message]
 
         missing_options = REQUIRED_OPTIONS.select { |option| options[option].nil? }
@@ -26,9 +26,23 @@ module Validatron
           next
         end
 
+        if options[:required] && value.nil?
+          errors[key] = message || "#{key} is required"
+          next
+        end
+
+        if value.nil? && options.key?(:default)
+          value = options[:default]
+          params[key] = value
+        end
+
         validator_class = VALIDATORS[options[:type].to_sym]
-        validator = validator_class.new(key, value, options, errors)
-        validator.validate
+        if validator_class
+          validator = validator_class.new(key, value, options, errors)
+          validator.validate
+        else
+          errors[key] = "Unknown type: #{options[:type]}"
+        end
       end
 
       raise ValidationError.new(errors) unless errors.empty?

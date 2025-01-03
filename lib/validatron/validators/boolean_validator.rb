@@ -1,6 +1,10 @@
 module Validatron
   module Validators
     class BooleanValidator < BaseValidator
+      # Available validations for BooleanValidator:
+      # - type: :boolean => must be a boolean
+      # - truthy: true => must be true
+      # - falsy: true => must be false
       def validate
         custom_message = options[:message]
 
