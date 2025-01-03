@@ -1,6 +1,7 @@
 require_relative "validators/base_validator"
 require_relative "validators/string_validator"
 require_relative "validators/number_validator"
+require_relative "validators/boolean_validator"
 
 module Validatron
   class Validator
@@ -8,7 +9,8 @@ module Validatron
 
     VALIDATORS = {
       string: Validators::StringValidator,
-      number: Validators::NumberValidator
+      number: Validators::NumberValidator,
+      boolean: Validators::BooleanValidator
     }.freeze
 
     def self.validate(params, schema)
