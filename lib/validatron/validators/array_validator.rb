@@ -1,6 +1,12 @@
 module Validatron
   module Validators
     class ArrayValidator < BaseValidator
+      # Available validations for ArrayValidator:
+      # - length: 5 => must have exactly 5 items
+      # - min: 0 => must have at least 0 items
+      # - max: 100 => must have at most 100 items
+      # - unique: true => must have unique items, ex: [1, 2, 3] is valid, [1, 1, 2] is invalid
+      # - items: { type: :string, min: 1, max: 100 } => must have items that match the schema
       def validate
         return unless value
 
