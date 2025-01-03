@@ -61,4 +61,40 @@ RSpec.describe Validatron::Validator do
     expect { Validatron::Validator.validate(params, schema_with_custom_message) }
       .to raise_error(Validatron::ValidationError, /Name is required/)
   end
+
+  it "raises error for input greater than lt" do
+    schema_with_lt = Validatron::Schema.new
+    schema_with_lt.optional(:age, type: :integer, lt: 10)
+
+    params = { age: 20 }
+    expect { Validatron::Validator.validate(params, schema_with_lt) }
+      .to raise_error(Validatron::ValidationError, /age must be less than 10/)
+  end
+
+  it "raises error for input less than gte" do
+    schema_with_gte = Validatron::Schema.new
+    schema_with_gte.optional(:age, type: :integer, gte: 10)
+
+    params = { age: 5 }
+    expect { Validatron::Validator.validate(params, schema_with_gte) }
+      .to raise_error(Validatron::ValidationError, /age must be greater than or equal to 10/)
+  end
+
+  it "raises error for input greater than lte" do
+    schema_with_lte = Validatron::Schema.new
+    schema_with_lte.optional(:age, type: :integer, lte: 10)
+
+    params = { age: 15 }
+    expect { Validatron::Validator.validate(params, schema_with_lte) }
+      .to raise_error(Validatron::ValidationError, /age must be less than or equal to 10/)
+  end
+
+  it "raises error for input not equal to eq" do
+    schema_with_eq = Validatron::Schema.new
+    schema_with_eq.optional(:age, type: :integer, eq: 10)
+
+    params = { age: 5 }
+    expect { Validatron::Validator.validate(params, schema_with_eq) }
+      .to raise_error(Validatron::ValidationError, /age must be equal to 10/)
+  end
 end
