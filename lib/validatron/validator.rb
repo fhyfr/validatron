@@ -1,12 +1,14 @@
 require_relative "validators/base_validator"
 require_relative "validators/string_validator"
+require_relative "validators/number_validator"
 
 module Validatron
   class Validator
     REQUIRED_OPTIONS = [:type].freeze
 
     VALIDATORS = {
-      string: Validators::StringValidator
+      string: Validators::StringValidator,
+      number: Validators::NumberValidator
     }.freeze
 
     def self.validate(params, schema)
