@@ -1,6 +1,13 @@
+require_relative "validators/base_validator"
+require_relative "validators/string_validator"
+
 module Validatron
   class Validator
     REQUIRED_OPTIONS = [:type].freeze
+
+    VALIDATORS = {
+      string: Validators::StringValidator
+    }.freeze
 
     def self.validate(params, schema)
       errors = {}
@@ -15,32 +22,12 @@ module Validatron
           next
         end
 
-        validate_field(key, value, options, errors)
+        validator_class = VALIDATORS[options[:type].to_sym]
+        validator = validator_class.new(key, value, options, errors)
+        validator.validate
       end
 
       raise ValidationError.new(errors) unless errors.empty?
-    end
-
-    def self.validate_field(key, value, options, errors)
-      message = options[:message]
-
-      if options[:required] && value.nil?
-        errors[key] = message || "is required"
-      elsif options[:type] && !value.nil? && !value.is_a?(Object.const_get(options[:type].capitalize))
-        errors[key] = message || "must be a #{options[:type]}"
-      elsif options[:format] && value !~ options[:format]
-        errors[key] = message || "is invalid"
-      elsif options[:gt] && value.to_i <= options[:gt]
-        errors[key] = message || "must be greater than #{options[:gt]}"
-      elsif options[:lt] && value.to_i >= options[:lt]
-        errors[key] = message || "must be less than #{options[:lt]}"
-      elsif options[:gte] && value.to_i < options[:gte]
-        errors[key] = message || "must be greater than or equal to #{options[:gte]}"
-      elsif options[:lte] && value.to_i > options[:lte]
-        errors[key] = message || "must be less than or equal to #{options[:lte]}"
-      elsif options[:eq] && value.to_i != options[:eq]
-        errors[key] = message || "must be equal to #{options[:eq]}"
-      end
     end
   end
 end
