@@ -1,0 +1,34 @@
+{
+  "name": "validatron",
+  "version": "1.0.0",
+  "description": "**Validatron** is a lightweight Ruby gem designed to handle request parameter validation. It provides a simple and flexible API for defining validation schemas, ensuring that incoming data is in the correct format before processing.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "changelog": "auto-changelog"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fhyfr/validatron.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fhyfr/validatron/issues"
+  },
+  "homepage": "https://github.com/fhyfr/validatron#readme",
+  "devDependencies": {
+    "auto-changelog": "^2.5.0"
+  },
+  "auto-changelog": {
+    "output": "CHANGELOG.md",
+    "template": "keepachangelog",
+    "unreleased": true,
+    "commitLimit": false,
+    "backfillLimit": false
+  }
+}
