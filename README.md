@@ -14,6 +14,7 @@ This gem can be used for validating API request parameters (e.g., body, query pa
   - [Validation Types](#validation-types)
   - [Custom Error Messages](#custom-error-messages)
   - [Optional Fields](#optional-fields)
+  - [Comparison Validators](#comparison-validators)
   - [Error Handling](#error-handling)
 - [Features](#features)
 - [Development](#development)
@@ -124,6 +125,18 @@ schema.optional(:age, gt: 0)
 ```
 
 This ensures that the `age` field, if present, must be greater than 0 (zero).
+
+### Comparison Validators
+
+You can use comparison validators to enforce numerical constraints on fields. The supported comparison validators are `gt` (greater than), `lt` (less than), `gte` (greater than or equal to), `lte` (less than or equal to), and `eq` (equal to).
+
+```ruby
+schema.optional(:age, gt: 18)  # Age must be greater than 18
+schema.optional(:age, lt: 65)  # Age must be less than 65
+schema.optional(:age, gte: 21) # Age must be greater than or equal to 21
+schema.optional(:age, lte: 60) # Age must be less than or equal to 60
+schema.optional(:age, eq: 30)  # Age must be equal to 30
+```
 
 ### Error Handling
 
