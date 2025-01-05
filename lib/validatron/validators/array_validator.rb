@@ -30,7 +30,7 @@ module Validatron
         end
 
         if options[:items]
-          item_schema = Validatron::Schema.new(item: options[:items])
+          item_schema = Schema.new(item: options[:items])
           value.each_with_index do |item, index|
             item_params = { item: item }
             begin

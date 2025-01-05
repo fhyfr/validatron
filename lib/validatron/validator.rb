@@ -46,7 +46,7 @@ module Validatron
 
           # Handle nested objects
           if options[:keys].is_a?(Hash)
-            nested_schema = Validatron::Schema.new(options[:keys])
+            nested_schema = Schema.new(options[:keys])
             nested_params = value.is_a?(Hash) ? value : {}
             nested_errors = {}
             validate(nested_params, nested_schema)
@@ -58,7 +58,7 @@ module Validatron
           # Handle arrays of objects
           if options[:items].is_a?(Hash) && options[:items][:type] == :object
             value.each_with_index do |item, index|
-              nested_schema = Validatron::Schema.new(options[:items][:keys])
+              nested_schema = Schema.new(options[:items][:keys])
               nested_params = item.is_a?(Hash) ? item : {}
               nested_errors = {}
               validate(nested_params, nested_schema)

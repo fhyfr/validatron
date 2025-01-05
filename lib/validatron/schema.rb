@@ -3,7 +3,9 @@ module Validatron
     attr_reader :rules
 
     def initialize(rules = {})
-      @rules = rules.transform_values(&:build)
+      @rules = rules.transform_values do |rule|
+        rule.is_a?(RuleBuilder) ? rule.build : rule
+      end
     end
 
     def self.string
