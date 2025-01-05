@@ -9,6 +9,14 @@ RSpec.describe Validatron::Validators::StringValidator do
       end
     end
 
+    context "when required is true and the value is nil" do
+      it "adds an error" do
+        described_class.new(:name, nil, { type: :string, required: true }, errors).validate
+
+        expect(errors[:name]).to eq("is required")
+      end
+    end
+
     context "when the value is not a string" do
       it "adds an error" do
         described_class.new(:name, 123, { type: :string }, errors).validate
@@ -91,6 +99,13 @@ RSpec.describe Validatron::Validators::StringValidator do
     context "when value is nil" do
       it "does not add an error" do
         described_class.new(:name, nil, { type: :string }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when required is false and value is nil" do
+      it "does not add an error" do
+        described_class.new(:name, nil, { type: :string, optional: true }, errors).validate
         expect(errors).to be_empty
       end
     end

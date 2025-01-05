@@ -10,6 +10,14 @@ RSpec.describe Validatron::Validators::ArrayValidator do
       end
     end
 
+    context "when required is true and value is nil" do
+      it "adds error" do
+        validator = described_class.new(:tags, nil, { type: :array, required: true }, errors)
+        validator.validate
+        expect(errors[:tags]).to eq("is required")
+      end
+    end
+
     context "when value does not have the exact length" do
       it "adds error" do
         validator = described_class.new(:tags, [1, 2, 3], { type: :array, length: 2 }, errors)

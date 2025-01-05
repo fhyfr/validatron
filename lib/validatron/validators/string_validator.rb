@@ -2,15 +2,21 @@ module Validatron
   module Validators
     class StringValidator < BaseValidator
       # Available validations for StringValidator:
+      # - required: true => must be present
       # - type: :string => must be a string
       # - min: 0 => must be at least 0 characters long
       # - max: 100 => must be at most 100 characters long
       # - length: 5 => must be exactly 5 characters long
       # - pattern: /^[a-z]+$/ => must match the pattern
       def validate
-        return unless value
-
         custom_message = options[:message]
+
+        if options[:required] && value.nil?
+          add_error(custom_message || "is required")
+          return
+        end
+
+        return unless value
 
         unless value.is_a?(String)
           add_error(custom_message || "must be a string")

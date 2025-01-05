@@ -4,14 +4,21 @@ module Validatron
   module Validators
     class DateValidator < BaseValidator
       # Available validations for DateValidator:
+      # - required: true => must be present
+      # - type: :date => must be a valid date
       # - iso: true => must be in ISO 8601 format
       # - min: "2020-01-01" => must be on or after 2020-01-01
       # - max: "2020-12-31" => must be on or before 2020-12-31
       # - timestamp: true => must be a valid timestamp (Time object)
       def validate
-        return unless value
-
         custom_message = options[:message]
+
+        if options[:required] && value.nil?
+          add_error(custom_message || "is required")
+          return
+        end
+
+        return unless value
 
         unless value.is_a?(Date) || value.is_a?(Time) || value.is_a?(String)
           add_error(custom_message || "must be a valid date")

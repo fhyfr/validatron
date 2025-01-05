@@ -9,6 +9,13 @@ RSpec.describe Validatron::Validators::NumberValidator do
       end
     end
 
+    context "when required is true and value is nil" do
+      it "adds an error" do
+        described_class.new(:age, nil, { required: true }, errors).validate
+        expect(errors[:age]).to eq("is required")
+      end
+    end
+
     context "when value is less than the min" do
       it "adds an error" do
         described_class.new(:age, 17, { min: 18 }, errors).validate

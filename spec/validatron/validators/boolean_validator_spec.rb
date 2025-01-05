@@ -9,6 +9,13 @@ RSpec.describe Validatron::Validators::BooleanValidator do
       end
     end
 
+    context "when required is true and value is nil" do
+      it "adds an error" do
+        described_class.new(:is_even, nil, { type: :boolean, required: true }, errors).validate
+        expect(errors[:is_even]).to eq("is required")
+      end
+    end
+
     context "when value is not true" do
       it "adds an error" do
         described_class.new(:is_even, false, { type: :boolean, truthy: true }, errors).validate

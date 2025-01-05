@@ -2,6 +2,7 @@ module Validatron
   module Validators
     class NumberValidator < BaseValidator
       # Available validations for NumberValidator:
+      # - required: true => must be present
       # - type: :number => must be a number
       # - min: 0 => must be at least 0
       # - max: 100 => must be at most 100
@@ -16,9 +17,14 @@ module Validatron
       # - eq: 42 => must be equal to 42
       # - precision: 2 => must have 2 decimal places
       def validate
-        return unless value
-
         custom_message = options[:message]
+
+        if options[:required] && value.nil?
+          add_error(custom_message || "is required")
+          return
+        end
+
+        return unless value
 
         unless value.is_a?(Numeric)
           add_error(custom_message || "must be a number")

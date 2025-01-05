@@ -17,6 +17,15 @@ RSpec.describe Validatron::Validators::HashValidator do
       end
     end
 
+    context "when value is required and value is nil" do
+      it "adds error" do
+        validator = described_class.new(:name, nil, { type: :hash, required: true }, errors)
+        validator.validate
+
+        expect(errors[:name]).to eq("is required")
+      end
+    end
+
     context "when value has keys with schema and one key is invalid" do
       it "adds error" do
         validator = described_class.new(

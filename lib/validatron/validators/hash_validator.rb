@@ -1,10 +1,19 @@
 module Validatron
   module Validators
     class HashValidator < BaseValidator
+      # Available validations for HashValidator:
+      # - required: true => must be present
+      # - type: :hash => must be a hash
+      # - keys: { key: { type: :string, required: true } } => must have the specified keys
       def validate
-        return unless value
-
         custom_message = options[:message]
+
+        if options[:required] && value.nil?
+          add_error(custom_message || "is required")
+          return
+        end
+
+        return unless value
 
         unless value.is_a?(Hash)
           add_error(custom_message || "must be a hash")
