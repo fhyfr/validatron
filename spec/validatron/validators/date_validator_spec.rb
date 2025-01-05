@@ -1,47 +1,119 @@
-# RSpec.describe Validatron::Validators::DateValidator do
-#   let(:errors) { {} }
+RSpec.describe Validatron::Validators::DateValidator do
+  let(:errors) { {} }
 
-#   it "validates a date" do
-#     validator = described_class.new(:start_date, Date.today, { type: :date }, errors)
-#     validator.validate
-#     expect(errors).to be_empty
-#   end
+  describe "#validate negative cases" do
+    context "when value is not a date" do
+      it "adds an error" do
+        described_class.new(:dob, "bar", {}, errors).validate
+        expect(errors[:dob]).to eq("must be a valid date")
+      end
+    end
 
-#   it "adds an error for non-date values" do
-#     validator = described_class.new(:start_date, "not a date", { type: :date }, errors)
-#     validator.validate
-#     expect(errors[:start_date]).to eq("must be a valid date")
-#   end
+    context "when value is not a valid date" do
+      it "adds an error" do
+        described_class.new(:dob, "2020-02-100", {}, errors).validate
+        expect(errors[:dob]).to eq("must be a valid date")
+      end
+    end
 
-#   it "adds an error for dates before min" do
-#     validator = described_class.new(:start_date, Date.new(2020, 1, 1), { type: :date, min: Date.new(2021, 1, 1) },
-#                                     errors)
-#     validator.validate
-#     expect(errors[:start_date]).to eq("must be on or after 2021-01-01")
-#   end
+    context "when value is not in ISO 8601 format" do
+      it "adds an error" do
+        described_class.new(:dob, "2020-02-10", { iso: true }, errors).validate
+        expect(errors[:dob]).to eq("must be in ISO 8601 format")
+      end
+    end
 
-#   it "adds an error for dates after max" do
-#     validator = described_class.new(:start_date, Date.new(2022, 1, 1), { type: :date, max: Date.new(2021, 12, 31) },
-#                                     errors)
-#     validator.validate
-#     expect(errors[:start_date]).to eq("must be on or before 2021-12-31")
-#   end
+    context "when value is before the min date" do
+      it "adds an error" do
+        described_class.new(:dob, "2019-12-31", { min: "2020-01-01" }, errors).validate
+        expect(errors[:dob]).to eq("must be on or after 2020-01-01")
+      end
+    end
 
-#   it "validates ISO 8601 format" do
-#     validator = described_class.new(:start_date, "2023-10-10T00:00:00Z", { type: :date, iso: true }, errors)
-#     validator.validate
-#     expect(errors).to be_empty
-#   end
+    context "when value is after the max date" do
+      it "adds an error" do
+        described_class.new(:dob, "2020-12-31", { max: "2020-12-30" }, errors).validate
+        expect(errors[:dob]).to eq("must be on or before 2020-12-30")
+      end
+    end
 
-#   it "adds an error for non-ISO 8601 format" do
-#     validator = described_class.new(:start_date, "10/10/2023", { type: :date, iso: true }, errors)
-#     validator.validate
-#     expect(errors[:start_date]).to eq("must be in ISO 8601 format")
-#   end
+    context "when value is not a timestamp" do
+      it "adds an error" do
+        described_class.new(:dob, "2020-12-31", { timestamp: true }, errors).validate
+        expect(errors[:dob]).to eq("must be a valid timestamp")
+      end
+    end
 
-#   it "validates a timestamp" do
-#     validator = described_class.new(:start_date, Time.now, { type: :date, timestamp: true }, errors)
-#     validator.validate
-#     expect(errors).to be_empty
-#   end
-# end
+    context "when a custom message is provided" do
+      it "uses the custom message" do
+        described_class.new(:dob, "bar", { message: "custom message" }, errors).validate
+        expect(errors[:dob]).to eq("custom message")
+      end
+    end
+  end
+
+  describe "#validate positive cases" do
+    context "when value is a date" do
+      it "does not add an error" do
+        described_class.new(:dob, "2020-02-10", {}, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is a valid date" do
+      it "does not add an error" do
+        described_class.new(:dob, "2020-02-10", {}, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is in ISO 8601 format" do
+      it "does not add an error" do
+        described_class.new(:dob, "2020-02-10T10:00:00Z", { iso: true }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is on or after the min date" do
+      it "does not add an error" do
+        described_class.new(:dob, "2020-01-01", { min: "2020-01-01" }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is on or before the max date" do
+      it "does not add an error" do
+        described_class.new(:dob, "2020-12-30", { max: "2020-12-30" }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is a timestamp" do
+      it "does not add an error" do
+        described_class.new(:dob, Time.now, { timestamp: true }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is a date object" do
+      it "does not add an error" do
+        described_class.new(:dob, Date.today, {}, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is a time object" do
+      it "does not add an error" do
+        described_class.new(:dob, Time.now, {}, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is a string" do
+      it "does not add an error" do
+        described_class.new(:dob, "2020-02-10", {}, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+  end
+end
