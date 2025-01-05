@@ -2,7 +2,7 @@ require_relative "validators/base_validator"
 require_relative "validators/string_validator"
 require_relative "validators/number_validator"
 require_relative "validators/array_validator"
-require_relative "validators/object_validator"
+require_relative "validators/hash_validator"
 require_relative "validators/date_validator"
 require_relative "validators/boolean_validator"
 
@@ -14,7 +14,7 @@ module Validatron
       string: Validators::StringValidator,
       number: Validators::NumberValidator,
       array: Validators::ArrayValidator,
-      object: Validators::ObjectValidator,
+      hash: Validators::HashValidator,
       date: Validators::DateValidator,
       boolean: Validators::BooleanValidator
     }.freeze
@@ -43,30 +43,6 @@ module Validatron
         if validator_class
           validator = validator_class.new(key, value, options, errors)
           validator.validate
-
-          # Handle nested objects
-          if options[:keys].is_a?(Hash)
-            nested_schema = Schema.new(options[:keys])
-            nested_params = value.is_a?(Hash) ? value : {}
-            nested_errors = {}
-            validate(nested_params, nested_schema)
-            nested_errors.each do |nested_key, nested_message|
-              errors["#{key}.#{nested_key}".to_sym] = nested_message
-            end
-          end
-
-          # Handle arrays of objects
-          if options[:items].is_a?(Hash) && options[:items][:type] == :object
-            value.each_with_index do |item, index|
-              nested_schema = Schema.new(options[:items][:keys])
-              nested_params = item.is_a?(Hash) ? item : {}
-              nested_errors = {}
-              validate(nested_params, nested_schema)
-              nested_errors.each do |nested_key, nested_message|
-                errors["#{key}[#{index}].#{nested_key}".to_sym] = nested_message
-              end
-            end
-          end
         else
           errors[key] = "Unknown type: #{options[:type]}"
         end

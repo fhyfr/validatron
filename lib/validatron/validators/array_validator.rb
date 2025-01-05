@@ -29,23 +29,45 @@ module Validatron
           add_error(custom_message || "must have at most #{options[:max]} items")
         end
 
-        if options[:items]
-          item_schema = Schema.new(item: options[:items])
-          value.each_with_index do |item, index|
-            item_params = { item: item }
-            begin
-              Validator.validate(item_params, item_schema)
-            rescue ValidationError => e
-              e.errors.each do |error_key, error_message|
-                errors[:"items[#{index}].#{error_key}"] = error_message
-              end
-            end
+        add_error(custom_message || "must have unique items") if options[:unique] && value.uniq.length != value.length
+
+        return unless options[:items]
+
+        value.each_with_index do |item, index|
+          item_key = :"#{key}[#{index}]"
+
+          # Handle items with missing or invalid schema
+          if options[:items].nil?
+            errors[item_key] = "must have a schema for items"
+            next
+          end
+
+          item_options = options[:items]
+
+          # Check if :type is present and valid
+          if item_options[:type].nil?
+            errors[item_key] = "item must have a valid type"
+            next
+          end
+
+          validator_class = Validator::VALIDATORS[item_options[:type].to_sym]
+
+          if validator_class
+            nested_validator = validator_class.new(item_key, item, item_options, errors)
+            nested_validator.validate
+          elsif item_options[:type] == :hash
+            # Handle nested hash items
+            nested_schema = Schema.new(item_options[:keys])
+            Validator.validate(item, nested_schema)
+          elsif item_options[:type] == :array
+            # Handle nested array items (if array of arrays)
+            nested_schema = Schema.new(item_options[:items])
+            nested_validator = Validator::VALIDATORS[:array].new(item_key, item, nested_schema, errors)
+            nested_validator.validate
+          else
+            errors[item_key] = "Unknown type: #{item_options[:type]}"
           end
         end
-
-        return unless options[:unique] && value.uniq.length != value.length
-
-        add_error(custom_message || "must have unique items")
       end
     end
   end

@@ -28,8 +28,8 @@ module Validatron
       RuleBuilder.new(:date)
     end
 
-    def self.object
-      RuleBuilder.new(:object)
+    def self.hash
+      RuleBuilder.new(:hash)
     end
   end
 end

@@ -47,9 +47,9 @@ RSpec.describe Validatron::Validators::ArrayValidator do
         validator = described_class.new(:tags, [1, 2, 3], { type: :array, items: { type: :string } }, errors)
         validator.validate
 
-        expect(errors[:"items[0].item"]).to eq("must be a string")
-        expect(errors[:"items[1].item"]).to eq("must be a string")
-        expect(errors[:"items[2].item"]).to eq("must be a string")
+        expect(errors[:"tags[0]"]).to eq("must be a string")
+        expect(errors[:"tags[1]"]).to eq("must be a string")
+        expect(errors[:"tags[2]"]).to eq("must be a string")
       end
     end
 
@@ -63,9 +63,50 @@ RSpec.describe Validatron::Validators::ArrayValidator do
         )
         validator.validate
 
-        expect(errors[:"items[0].item"]).to eq("custom message")
-        expect(errors[:"items[1].item"]).to eq("custom message")
-        expect(errors[:"items[2].item"]).to eq("custom message")
+        expect(errors[:"tags[0]"]).to eq("custom message")
+        expect(errors[:"tags[1]"]).to eq("custom message")
+        expect(errors[:"tags[2]"]).to eq("custom message")
+      end
+    end
+
+    context "when value has nested array of hashes" do
+      it "adds error when nested array items do not match the schema" do
+        validator = described_class.new(
+          :tags,
+          [{ name: 123 }, { name: 123 }],
+          { type: :array, items: { type: :hash, keys: { name: { type: :string } } } },
+          errors
+        )
+        validator.validate
+
+        expect(errors[:"tags[0].name"]).to eq("must be a string")
+        expect(errors[:"tags[1].name"]).to eq("must be a string")
+      end
+
+      it "adds error when nested array items do not match the schema with custom message" do
+        validator = described_class.new(
+          :tags,
+          [{ name: "123" }, { name: 123 }],
+          { type: :array, items: { type: :hash, keys: { name: { type: :string, message: "custom message" } } } },
+          errors
+        )
+        validator.validate
+
+        expect(errors[:"tags[1].name"]).to eq("custom message")
+      end
+
+      it "adds error when deep nested array items do not match the schema" do
+        validator = described_class.new(
+          :tags,
+          [{ items: [{ name: 123 }] }],
+          { type: :array, items: {
+            type: :hash, keys: { items: { type: :array, items: { type: :hash, keys: { name: { type: :string } } } } }
+          } },
+          errors
+        )
+        validator.validate
+
+        expect(errors[:"tags[0].items[0].name"]).to eq("must be a string")
       end
     end
   end

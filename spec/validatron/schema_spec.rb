@@ -7,7 +7,7 @@ RSpec.describe Validatron::Schema do
         email: Validatron::Schema.string.email.required,
         website: Validatron::Schema.string.uri,
         tags: Validatron::Schema.array.items(Validatron::Schema.string.build).unique,
-        address: Validatron::Schema.object.keys(
+        address: Validatron::Schema.hash.keys(
           {
             street: Validatron::Schema.string.required.build,
             city: Validatron::Schema.string.required.build,
@@ -24,7 +24,7 @@ RSpec.describe Validatron::Schema do
     expect(schema.rules[:tags]).to eq({ type: :array, items: { type: :string }, unique: true })
     expect(schema.rules[:address]).to eq(
       {
-        type: :object,
+        type: :hash,
         keys: {
           street: { type: :string, required: true },
           city: { type: :string, required: true },

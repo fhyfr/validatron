@@ -7,7 +7,7 @@ RSpec.describe Validatron::Validator do
         email: Validatron::Schema.string.required,
         website: Validatron::Schema.string,
         tags: Validatron::Schema.array.items(Validatron::Schema.string).unique
-        # TODO: add test for array of objects
+        # TODO: add test for array of hashes
       }
     )
   end
@@ -42,5 +42,5 @@ RSpec.describe Validatron::Validator do
       .to raise_error(Validatron::ValidationError, /tags must have unique items/)
   end
 
-  # TODO: add test for array of objects
+  # TODO: add test for array of hashes
 end

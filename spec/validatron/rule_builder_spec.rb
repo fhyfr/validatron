@@ -24,8 +24,8 @@ RSpec.describe Validatron::RuleBuilder do
     expect(rule).to eq({ type: :array, items: { type: :string }, unique: true })
   end
 
-  it "builds an object rule with nested keys" do
-    rule = Validatron::RuleBuilder.new(:object).keys(
+  it "builds an hash rule with nested keys" do
+    rule = Validatron::RuleBuilder.new(:hash).keys(
       {
         street: Validatron::RuleBuilder.new(:string).required.build,
         city: Validatron::RuleBuilder.new(:string).required.build,
@@ -35,7 +35,7 @@ RSpec.describe Validatron::RuleBuilder do
 
     expect(rule).to eq(
       {
-        type: :object,
+        type: :hash,
         keys: {
           street: { type: :string, required: true },
           city: { type: :string, required: true },
