@@ -87,5 +87,12 @@ RSpec.describe Validatron::Validators::StringValidator do
         expect(errors).to be_empty
       end
     end
+
+    context "when value is nil" do
+      it "does not add an error" do
+        described_class.new(:name, nil, { type: :string }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
   end
 end

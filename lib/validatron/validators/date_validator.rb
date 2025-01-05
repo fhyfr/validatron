@@ -35,7 +35,6 @@ module Validatron
           add_error(custom_message || "must be on or before #{options[:max]}")
         end
 
-        # handle for timestamp
         return unless options[:timestamp]
 
         add_error(custom_message || "must be a valid timestamp") unless value.is_a?(Time)

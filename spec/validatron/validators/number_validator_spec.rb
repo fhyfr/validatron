@@ -1,87 +1,203 @@
-# RSpec.describe Validatron::Validators::NumberValidator do
-#   let(:errors) { {} }
+RSpec.describe Validatron::Validators::NumberValidator do
+  let(:errors) { {} }
 
-#   it "validates a number" do
-#     validator = described_class.new(:age, 25, { type: :number }, errors)
-#     validator.validate
-#     expect(errors).to be_empty
-#   end
+  describe "#validate negative cases" do
+    context "when value is not a number" do
+      it "adds an error" do
+        described_class.new(:age, "bar", {}, errors).validate
+        expect(errors[:age]).to eq("must be a number")
+      end
+    end
 
-#   it "adds an error for non-numeric values" do
-#     validator = described_class.new(:age, "25", { type: :number }, errors)
-#     validator.validate
-#     expect(errors[:age]).to eq("must be a number")
-#   end
+    context "when value is less than the min" do
+      it "adds an error" do
+        described_class.new(:age, 17, { min: 18 }, errors).validate
+        expect(errors[:age]).to eq("must be at least 18")
+      end
+    end
 
-#   it "adds an error for numbers less than min" do
-#     validator = described_class.new(:age, 25, { type: :number, min: 30 }, errors)
-#     validator.validate
-#     expect(errors[:age]).to eq("must be at least 30")
-#   end
+    context "when value is greater than the max" do
+      it "adds an error" do
+        described_class.new(:age, 101, { max: 100 }, errors).validate
+        expect(errors[:age]).to eq("must be at most 100")
+      end
+    end
 
-#   it "adds an error for numbers greater than max" do
-#     validator = described_class.new(:age, 25, { type: :number, max: 20 }, errors)
-#     validator.validate
-#     expect(errors[:age]).to eq("must be at most 20")
-#   end
+    context "when value is not an integer" do
+      it "adds an error" do
+        described_class.new(:age, 17.5, { integer: true }, errors).validate
+        expect(errors[:age]).to eq("must be an integer")
+      end
+    end
 
-#   it "adds an error for non-integers" do
-#     validator = described_class.new(:age, 25.5, { type: :number, integer: true }, errors)
-#     validator.validate
-#     expect(errors[:age]).to eq("must be an integer")
-#   end
+    context "when value is not a float" do
+      it "adds an error" do
+        described_class.new(:age, 17, { float: true }, errors).validate
+        expect(errors[:age]).to eq("must be a float")
+      end
+    end
 
-#   it "adds an error for non-floats" do
-#     validator = described_class.new(:age, 25, { type: :number, float: true }, errors)
-#     validator.validate
-#     expect(errors[:age]).to eq("must be a float")
-#   end
+    context "when value is not positive" do
+      it "adds an error" do
+        described_class.new(:age, 0, { positive: true }, errors).validate
+        expect(errors[:age]).to eq("must be positive")
+      end
+    end
 
-#   it "adds an error for non-positive numbers" do
-#     validator = described_class.new(:age, 0, { type: :number, positive: true }, errors)
-#     validator.validate
-#     expect(errors[:age]).to eq("must be positive")
-#   end
+    context "when value is not negative" do
+      it "adds an error" do
+        described_class.new(:age, 0, { negative: true }, errors).validate
+        expect(errors[:age]).to eq("must be negative")
+      end
+    end
 
-#   it "adds an error for non-negative numbers" do
-#     validator = described_class.new(:age, 5, { type: :number, negative: true }, errors)
-#     validator.validate
-#     expect(errors[:age]).to eq("must be negative")
-#   end
+    context "when value is not greater than the gt value" do
+      it "adds an error" do
+        described_class.new(:age, 0, { gt: 0 }, errors).validate
+        expect(errors[:age]).to eq("must be greater than 0")
+      end
+    end
 
-#   it "adds an error for numbers less than gt" do
-#     validator = described_class.new(:age, 5, { type: :number, gt: 10 }, errors)
-#     validator.validate
-#     expect(errors[:age]).to eq("must be greater than 10")
-#   end
+    context "when value is not greater than or equal to the gte value" do
+      it "adds an error" do
+        described_class.new(:age, 0, { gte: 1 }, errors).validate
+        expect(errors[:age]).to eq("must be greater than or equal to 1")
+      end
+    end
 
-#   it "adds an error for numbers less than gte" do
-#     validator = described_class.new(:age, 5, { type: :number, gte: 10 }, errors)
-#     validator.validate
-#     expect(errors[:age]).to eq("must be greater than or equal to 10")
-#   end
+    context "when value is not less than the lt value" do
+      it "adds an error" do
+        described_class.new(:age, 1, { lt: 1 }, errors).validate
+        expect(errors[:age]).to eq("must be less than 1")
+      end
+    end
 
-#   it "adds an error for numbers greater than lt" do
-#     validator = described_class.new(:age, 15, { type: :number, lt: 10 }, errors)
-#     validator.validate
-#     expect(errors[:age]).to eq("must be less than 10")
-#   end
+    context "when value is not less than or equal to the lte value" do
+      it "adds an error" do
+        described_class.new(:age, 1, { lte: 0 }, errors).validate
+        expect(errors[:age]).to eq("must be less than or equal to 0")
+      end
+    end
 
-#   it "adds an error for numbers greater than lte" do
-#     validator = described_class.new(:age, 15, { type: :number, lte: 10 }, errors)
-#     validator.validate
-#     expect(errors[:age]).to eq("must be less than or equal to 10")
-#   end
+    context "when value is not equal to the eq value" do
+      it "adds an error" do
+        described_class.new(:age, 1, { eq: 0 }, errors).validate
+        expect(errors[:age]).to eq("must be equal to 0")
+      end
+    end
 
-#   it "adds an error for numbers not equal to eq" do
-#     validator = described_class.new(:age, 15, { type: :number, eq: 10 }, errors)
-#     validator.validate
-#     expect(errors[:age]).to eq("must be equal to 10")
-#   end
+    context "when value does not have the correct precision" do
+      it "adds an error" do
+        described_class.new(:age, 1.234, { precision: 2 }, errors).validate
+        expect(errors[:age]).to eq("must have 2 decimal places")
+      end
+    end
 
-#   it "adds an error for numbers with incorrect precision" do
-#     validator = described_class.new(:age, 25.123, { type: :number, precision: 2 }, errors)
-#     validator.validate
-#     expect(errors[:age]).to eq("must have 2 decimal places")
-#   end
-# end
+    context "when a custom message is provided" do
+      it "uses the custom message" do
+        described_class.new(:age, "bar", { message: "custom message" }, errors).validate
+        expect(errors[:age]).to eq("custom message")
+      end
+    end
+  end
+
+  describe "#validate positive cases" do
+    context "when value is a valid number" do
+      it "does not add an error" do
+        described_class.new(:age, 18, {}, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is at least the min" do
+      it "does not add an error" do
+        described_class.new(:age, 18, { min: 18 }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is at most the max" do
+      it "does not add an error" do
+        described_class.new(:age, 100, { max: 100 }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is an integer" do
+      it "does not add an error" do
+        described_class.new(:age, 18, { integer: true }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is a float" do
+      it "does not add an error" do
+        described_class.new(:age, 17.5, { float: true }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is positive" do
+      it "does not add an error" do
+        described_class.new(:age, 1, { positive: true }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is negative" do
+      it "does not add an error" do
+        described_class.new(:age, -1, { negative: true }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is greater than the gt value" do
+      it "does not add an error" do
+        described_class.new(:age, 1, { gt: 0 }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is greater than or equal to the gte value" do
+      it "does not add an error" do
+        described_class.new(:age, 1, { gte: 1 }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is less than the lt value" do
+      it "does not add an error" do
+        described_class.new(:age, 0, { lt: 1 }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is less than or equal to the lte value" do
+      it "does not add an error" do
+        described_class.new(:age, 0, { lte: 0 }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is equal to the eq value" do
+      it "does not add an error" do
+        described_class.new(:age, 0, { eq: 0 }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value has the correct precision" do
+      it "does not add an error" do
+        described_class.new(:age, 1.23, { precision: 2 }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when value is nil" do
+      it "does not add an error" do
+        described_class.new(:age, nil, {}, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+  end
+end

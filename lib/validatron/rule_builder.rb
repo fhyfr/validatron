@@ -106,6 +106,46 @@ module Validatron
       self
     end
 
+    def truthy
+      @rules[:truthy] = true
+      self
+    end
+
+    def falsy
+      @rules[:falsy] = true
+      self
+    end
+
+    def integer
+      @rules[:integer] = true
+      self
+    end
+
+    def float
+      @rules[:float] = true
+      self
+    end
+
+    def positive
+      @rules[:positive] = true
+      self
+    end
+
+    def negative
+      @rules[:negative] = true
+      self
+    end
+
+    def precision(value)
+      @rules[:precision] = value
+      self
+    end
+
+    def timestamp
+      @rules[:timestamp] = true
+      self
+    end
+
     def build
       @rules
     end
