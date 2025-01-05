@@ -45,7 +45,7 @@ module Validatron
           validator.validate
 
           # Handle nested objects
-          if options[:keys]
+          if options[:keys].is_a?(Hash)
             nested_schema = Validatron::Schema.new(options[:keys])
             nested_params = value.is_a?(Hash) ? value : {}
             nested_errors = {}

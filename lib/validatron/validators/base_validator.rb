@@ -16,8 +16,9 @@ module Validatron
 
       protected
 
-      def add_error(message)
-        errors[key] = message
+      def add_error(message, nested_key = nil)
+        error_key = nested_key ? "#{key}.#{nested_key}".to_sym : key
+        errors[error_key] = message
       end
     end
   end

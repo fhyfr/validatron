@@ -1,39 +1,101 @@
-# RSpec.describe Validatron::Validators::StringValidator do
-#   let(:errors) { {} }
+RSpec.describe Validatron::Validators::StringValidator do
+  describe "#validate negative cases" do
+    context "when the value is nil" do
+      it "does not add an error" do
+        errors = {}
+        described_class.new(:name, nil, { type: :string }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
 
-#   it "validates a string" do
-#     validator = described_class.new(:name, "John", { type: :string }, errors)
-#     validator.validate
-#     expect(errors).to be_empty
-#   end
+    context "when the value is not a string" do
+      it "adds an error" do
+        errors = {}
+        described_class.new(:name, 123, { type: :string }, errors).validate
+        expect(errors[:name]).to eq("must be a string")
+      end
+    end
 
-#   it "adds an error for non-string values" do
-#     validator = described_class.new(:name, 123, { type: :string }, errors)
-#     validator.validate
-#     expect(errors[:name]).to eq("must be a string")
-#   end
+    context "when the value is less than the minimum length" do
+      it "adds an error" do
+        errors = {}
+        described_class.new(:name, "a", { type: :string, min: 2 }, errors).validate
+        expect(errors[:name]).to eq("must be at least 2 characters long")
+      end
+    end
 
-#   it "adds an error for strings shorter than min length" do
-#     validator = described_class.new(:name, "Jo", { type: :string, min: 3 }, errors)
-#     validator.validate
-#     expect(errors[:name]).to eq("must be at least 3 characters long")
-#   end
+    context "when the value is greater than the maximum length" do
+      it "adds an error" do
+        errors = {}
+        described_class.new(:name, "abc", { type: :string, max: 2 }, errors).validate
+        expect(errors[:name]).to eq("must be at most 2 characters long")
+      end
+    end
 
-#   it "adds an error for strings longer than max length" do
-#     validator = described_class.new(:name, "John Doe", { type: :string, max: 5 }, errors)
-#     validator.validate
-#     expect(errors[:name]).to eq("must be at most 5 characters long")
-#   end
+    context "when the value is not the exact length" do
+      it "adds an error" do
+        errors = {}
+        described_class.new(:name, "abcd", { type: :string, length: 3 }, errors).validate
+        expect(errors[:name]).to eq("must be exactly 3 characters long")
+      end
+    end
 
-#   it "adds an error for strings not matching length" do
-#     validator = described_class.new(:name, "John", { type: :string, length: 5 }, errors)
-#     validator.validate
-#     expect(errors[:name]).to eq("must be exactly 5 characters long")
-#   end
+    context "when the value does not match the pattern" do
+      it "adds an error" do
+        errors = {}
+        described_class.new(:name, "123", { type: :string, pattern: /^[a-z]+$/ }, errors).validate
+        expect(errors[:name]).to eq("is invalid")
+      end
+    end
+  end
 
-#   it "adds an error for strings not matching pattern" do
-#     validator = described_class.new(:name, "John", { type: :string, pattern: /\d+/ }, errors)
-#     validator.validate
-#     expect(errors[:name]).to eq("is invalid")
-#   end
-# end
+  describe "#validate positive cases" do
+    context "when a custom message is provided" do
+      it "uses the custom message" do
+        errors = {}
+        described_class.new(:name, 123, { type: :string, message: "custom message" }, errors).validate
+        expect(errors[:name]).to eq("custom message")
+      end
+    end
+
+    context "when the value is a valid string" do
+      it "does not add an error" do
+        errors = {}
+        described_class.new(:name, "John", { type: :string }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when the value is a valid string with a minimum length" do
+      it "does not add an error" do
+        errors = {}
+        described_class.new(:name, "John", { type: :string, min: 1 }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when the value is a valid string with a maximum length" do
+      it "does not add an error" do
+        errors = {}
+        described_class.new(:name, "John", { type: :string, max: 10 }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when the value is a valid string with an exact length" do
+      it "does not add an error" do
+        errors = {}
+        described_class.new(:name, "John", { type: :string, length: 4 }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+
+    context "when the value is a valid string that matches the pattern" do
+      it "does not add an error" do
+        errors = {}
+        described_class.new(:name, "abc", { type: :string, pattern: /^[a-z]+$/ }, errors).validate
+        expect(errors).to be_empty
+      end
+    end
+  end
+end
