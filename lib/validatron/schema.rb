@@ -2,16 +2,32 @@ module Validatron
   class Schema
     attr_reader :rules
 
-    def initialize
-      @rules = {}
+    def initialize(rules = {})
+      @rules = rules.transform_values(&:build)
     end
 
-    def required(name, **options)
-      @rules[name] = { required: true, **options }
+    def self.string
+      RuleBuilder.new(:string)
     end
 
-    def optional(name, **options)
-      @rules[name] = { required: false, **options }
+    def self.number
+      RuleBuilder.new(:number)
+    end
+
+    def self.boolean
+      RuleBuilder.new(:boolean)
+    end
+
+    def self.array
+      RuleBuilder.new(:array)
+    end
+
+    def self.date
+      RuleBuilder.new(:date)
+    end
+
+    def self.object
+      RuleBuilder.new(:object)
     end
   end
 end

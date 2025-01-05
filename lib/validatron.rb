@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "validatron/version"
+require_relative "validatron/rule_builder"
 require_relative "validatron/schema"
 require_relative "validatron/validator"
 require_relative "validatron/errors"
